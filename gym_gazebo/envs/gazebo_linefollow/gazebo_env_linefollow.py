@@ -100,7 +100,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
 			if self.timeout > 1:
 				done = True
 
-		return state, done
+		return state, False
 
 	def _seed(self, seed=None):
 		self.np_random, seed = seeding.np_random(seed)
