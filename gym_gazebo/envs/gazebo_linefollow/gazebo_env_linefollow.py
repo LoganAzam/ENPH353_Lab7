@@ -76,11 +76,11 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
 		# have no line detected.
 
 		gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-		_, thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)
+		_, thresh = cv2.threshold(gray, 75, 255, cv2.THRESH_BINARY_INV)
 
 		height, width = thresh.shape
 		roi_start_row = int(height * 0.75)
-		roi_end_row = int(height * 0.85)
+		roi_end_row = int(height * 0.95)
 		roi = thresh[roi_start_row:roi_end_row, :]
 
 		bin_width = width // NUM_BINS
