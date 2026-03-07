@@ -1,5 +1,7 @@
 import random
 import pickle
+import csv
+import os
 
 
 class QLearn:
@@ -17,6 +19,13 @@ class QLearn:
         
         # TODO: Implement loading Q values from pickle file.
 
+        path = filename + ".pickle"
+        if os.path.exists(path):
+            with open(path, "rb") as f:
+                self.q = pickle.load(f)
+            print("Loaded file: {}".format(path))
+        else:
+            print("No existing pickle found at {}. Starting fresh.".format(path))
         print("Loaded file: {}".format(filename+".pickle"))
 
     def saveQ(self, filename):
@@ -24,6 +33,14 @@ class QLearn:
         Save the Q state-action values in a pickle file.
         '''
         # TODO: Implement saving Q values to pickle and CSV files.
+
+        with open(filename + ".pickle", "wb") as f:
+            pickle.dump(self.q, f)
+
+        with open(filename + ".csv", "w", newline='') as f:
+            writer = csv.writer(f)
+            for (state, action), value in self.q.items():
+                writer.writerow([state, action, value])
 
         print("Wrote to file: {}".format(filename+".pickle"))
 
@@ -54,7 +71,18 @@ class QLearn:
 
         # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE 
 
-        return self.actions[1]
+        if random.random() < self.epsilon:
+            action = random.choice(self.actions)
+        else:
+            q_values = [self.getQ(state, a) for a in self.actions]
+            max_q = max(q_values)
+            # Handle ties by choosing a random action among those with max Q
+            best_actions = [a for a, q in zip(self.actions, q_values) if q == max_q]
+            action = random.choice(best_actions)
+
+        if return_q:
+            return action, self.getQ(state, action)
+        return action
 
     def learn(self, state1, action1, reward, state2):
         '''
@@ -75,4 +103,8 @@ class QLearn:
 
         # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE
 
-        self.q[(state1,action1)] = reward
+        old_q = self.getQ(state1, action1)
+
+        max_q = max([self.getQ(state2, a) for a in self.actions], default=0.0)
+
+        self.q[(state1, action1)] = old_q + self.alpha * (reward + self.gamma * max_q - old_q)

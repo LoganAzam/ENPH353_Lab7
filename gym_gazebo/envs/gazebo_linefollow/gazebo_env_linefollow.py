@@ -79,7 +79,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
 		_, thresh = cv2.threshold(gray, 140, 255, cv2.THRESH_BINARY_INV)
 
 		height, width = thresh.shape
-		roi_start_row = int(height * 0.75)
+		roi_start_row = int(height * 0.85)
 		roi_end_row = int(height * 0.95)
 		roi = thresh[roi_start_row:roi_end_row, :]
 
@@ -113,7 +113,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
 		cv2.imshow("threshold", thresh)	
 		cv2.waitKey(1)
 
-		return state, False
+		return tuple(state), done
 
 	def _seed(self, seed=None):
 		self.np_random, seed = seeding.np_random(seed)
